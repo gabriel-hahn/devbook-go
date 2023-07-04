@@ -10,5 +10,5 @@ import (
 func main() {
 	r := router.Initialize()
 
-	log.Fatal(http.ListenAndServe(":5000", r))
+	log.Fatal(http.ListenAndServe(":5001", r))
 }

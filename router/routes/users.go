@@ -22,7 +22,7 @@ var userRoutes = []Route{
 	{
 		URI:         "/user/{id}",
 		Method:      http.MethodGet,
-		Callback:    controllers.GetUserById,
+		Callback:    controllers.FindUserById,
 		RequestAuth: false,
 	},
 	{

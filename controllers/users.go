@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -26,9 +27,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
 
 	repository := repositories.NewUserRepository(db)
-	repository.Create(user)
+	userID, err := repository.Create(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.Write([]byte(fmt.Sprintf("ID: %d", userID)))
 }
 
 func FindAllUsers(w http.ResponseWriter, r *http.Request) {

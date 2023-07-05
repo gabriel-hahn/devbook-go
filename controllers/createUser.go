@@ -42,5 +42,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	JSON(w, http.StatusCreated, user)
+	responseData := models.UserResponse{
+		ID:        user.ID,
+		Name:      user.Name,
+		Nick:      user.Nick,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+	}
+
+	JSON(w, http.StatusCreated, responseData)
 }

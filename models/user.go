@@ -15,6 +15,14 @@ type User struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 }
 
+type UserResponse struct {
+	ID        uint64    `json:"id,omitempty"`
+	Name      string    `json:"name,omitempty"`
+	Nick      string    `json:"nick,omitempty"`
+	Email     string    `json:"email,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+}
+
 func (u *User) Prepare() error {
 	if err := u.validate(); err != nil {
 		return err

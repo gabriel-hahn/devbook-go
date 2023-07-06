@@ -23,7 +23,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = user.Prepare(); err != nil {
+	if err = user.Prepare(models.Signup); err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
 	}

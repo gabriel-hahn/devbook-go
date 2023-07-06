@@ -23,8 +23,15 @@ type UserResponse struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 }
 
-func (u *User) Prepare() error {
-	if err := u.validate(); err != nil {
+type ValidationType string
+
+const (
+	Signup ValidationType = "signup"
+	Update ValidationType = "update"
+)
+
+func (u *User) Prepare(step ValidationType) error {
+	if err := u.validate(step); err != nil {
 		return err
 	}
 
@@ -32,17 +39,17 @@ func (u *User) Prepare() error {
 	return nil
 }
 
-func (u *User) validate() error {
+func (u *User) validate(step ValidationType) error {
 	if u.Name == "" {
 		return errors.New("name is required")
 	}
 	if u.Nick == "" {
 		return errors.New("nick is required")
 	}
-	if u.Email == "" {
+	if step == Signup && u.Email == "" {
 		return errors.New("email is required")
 	}
-	if u.Password == "" {
+	if step == Signup && u.Password == "" {
 		return errors.New("password is required")
 	}
 

@@ -46,7 +46,7 @@ func UpdateUserById(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repository := repositories.NewUserRepository(db)
-	if err = repository.Update(userID, user); err != nil {
+	if err = repository.UpdateByID(userID, user); err != nil {
 		Error(w, http.StatusInternalServerError, err)
 		return
 	}

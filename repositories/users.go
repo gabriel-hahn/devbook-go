@@ -87,6 +87,23 @@ func (u Users) FindByID(userID uint64) (models.User, error) {
 	return user, nil
 }
 
+func (u Users) FindByEmail(userEmail string) (models.User, error) {
+	rows, err := u.db.Query("select id, password from users where email = ?", userEmail)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer rows.Close()
+
+	var user models.User
+	if rows.Next() {
+		if err = rows.Scan(&user.ID, &user.Password); err != nil {
+			return models.User{}, err
+		}
+	}
+
+	return user, nil
+}
+
 func (u Users) UpdateByID(ID uint64, user models.User) error {
 	statement, err := u.db.Prepare("update users set name = ?, nick = ? where id = ?")
 	if err != nil {

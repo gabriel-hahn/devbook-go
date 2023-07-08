@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/badoux/checkmail"
+	"github.com/gabriel-hahn/devbook/internal/crypto"
 )
 
 type User struct {
@@ -33,28 +34,35 @@ const (
 )
 
 func (u *User) Prepare(step ValidationType) error {
-	if err := u.validate(step); err != nil {
-		return err
+	if step == Signup {
+		if err := u.validate(); err != nil {
+			return err
+		}
+
+		if err := u.generatePasswordHash(); err != nil {
+			return err
+		}
 	}
 
 	u.trimValues()
+
 	return nil
 }
 
-func (u *User) validate(step ValidationType) error {
+func (u *User) validate() error {
 	if u.Name == "" {
 		return errors.New("name is required")
 	}
 	if u.Nick == "" {
 		return errors.New("nick is required")
 	}
-	if step == Signup && u.Email == "" {
+	if u.Email == "" {
 		return errors.New("email is required")
 	}
 	if err := checkmail.ValidateFormat(u.Email); err != nil {
 		return errors.New("invalid email format")
 	}
-	if step == Signup && u.Password == "" {
+	if u.Password == "" {
 		return errors.New("password is required")
 	}
 
@@ -65,4 +73,14 @@ func (u *User) trimValues() {
 	u.Name = strings.TrimSpace(u.Name)
 	u.Nick = strings.TrimSpace(u.Nick)
 	u.Email = strings.TrimSpace(u.Email)
+}
+
+func (u *User) generatePasswordHash() error {
+	hashedPassword, err := crypto.GenerateHash(u.Password)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(hashedPassword)
+	return nil
 }

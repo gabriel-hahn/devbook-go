@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 
@@ -34,12 +35,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	repository := repositories.NewUserRepository(db)
 	userFromDB, err := repository.FindByEmail(user.Email)
 	if err != nil {
-		Error(w, http.StatusInternalServerError, err)
+		Error(w, http.StatusInternalServerError, errors.New("invalid credentials"))
 		return
 	}
 
 	if err = crypto.CheckPassword(userFromDB.Password, user.Password); err != nil {
-		Error(w, http.StatusUnauthorized, err)
+		Error(w, http.StatusUnauthorized, errors.New("invalid credentials"))
 		return
 	}
+
+	// token, _ := auth.CreateToken(userFromDB.ID)
 }

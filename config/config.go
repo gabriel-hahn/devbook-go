@@ -12,6 +12,7 @@ import (
 var (
 	DbStrConnection = ""
 	Port            = 0
+	SecretKey       []byte
 )
 
 func Initialize() {
@@ -31,4 +32,6 @@ func Initialize() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
+
+	SecretKey = []byte(os.Getenv("SECRET_TOKEN"))
 }

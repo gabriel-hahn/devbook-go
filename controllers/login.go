@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gabriel-hahn/devbook/database"
+	"github.com/gabriel-hahn/devbook/internal/auth"
 	"github.com/gabriel-hahn/devbook/internal/crypto"
 	"github.com/gabriel-hahn/devbook/models"
 	"github.com/gabriel-hahn/devbook/repositories"
@@ -44,5 +45,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// token, _ := auth.CreateToken(userFromDB.ID)
+	token, err := auth.CreateToken(userFromDB.ID)
+	if err != nil {
+		Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	w.Write([]byte(token))
 }

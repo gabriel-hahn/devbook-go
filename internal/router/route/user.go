@@ -1,40 +1,40 @@
-package routes
+package route
 
 import (
 	"net/http"
 
-	"github.com/gabriel-hahn/devbook/controllers"
+	"github.com/gabriel-hahn/devbook/internal/controller"
 )
 
 var userRoutes = []Route{
 	{
 		URI:         "/users",
 		Method:      http.MethodGet,
-		Callback:    controllers.FindAllUsers,
+		Callback:    controller.FindAllUsers,
 		RequestAuth: false,
 	},
 	{
 		URI:         "/user",
 		Method:      http.MethodPost,
-		Callback:    controllers.CreateUser,
+		Callback:    controller.CreateUser,
 		RequestAuth: false,
 	},
 	{
 		URI:         "/user/{id}",
 		Method:      http.MethodGet,
-		Callback:    controllers.FindUserById,
+		Callback:    controller.FindUserById,
 		RequestAuth: false,
 	},
 	{
 		URI:         "/user/{id}",
 		Method:      http.MethodPut,
-		Callback:    controllers.UpdateUserById,
+		Callback:    controller.UpdateUserById,
 		RequestAuth: false,
 	},
 	{
 		URI:         "/user/{id}",
 		Method:      http.MethodDelete,
-		Callback:    controllers.DeleteUserById,
+		Callback:    controller.DeleteUserById,
 		RequestAuth: false,
 	},
 }

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gabriel-hahn/devbook/config"
-	"github.com/gabriel-hahn/devbook/router"
+	"github.com/gabriel-hahn/devbook/internal/router"
 )
 
 func main() {

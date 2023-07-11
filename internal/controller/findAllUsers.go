@@ -1,12 +1,12 @@
-package controllers
+package controller
 
 import (
 	"errors"
 	"net/http"
 	"strings"
 
-	"github.com/gabriel-hahn/devbook/database"
-	"github.com/gabriel-hahn/devbook/repositories"
+	"github.com/gabriel-hahn/devbook/internal/database"
+	"github.com/gabriel-hahn/devbook/internal/repository"
 )
 
 func FindAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -24,8 +24,8 @@ func FindAllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	repository := repositories.NewUserRepository(db)
-	users, err := repository.FindAllByFilters(nameOrNick)
+	userRepository := repository.NewUserRepository(db)
+	users, err := userRepository.FindAllByFilters(nameOrNick)
 	if err != nil {
 		Error(w, http.StatusInternalServerError, err)
 		return

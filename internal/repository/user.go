@@ -1,10 +1,10 @@
-package repositories
+package repository
 
 import (
 	"database/sql"
 	"fmt"
 
-	"github.com/gabriel-hahn/devbook/models"
+	"github.com/gabriel-hahn/devbook/internal/model"
 )
 
 type Users struct {
@@ -15,7 +15,7 @@ func NewUserRepository(db *sql.DB) *Users {
 	return &Users{db}
 }
 
-func (u Users) Create(user models.User) (uint64, error) {
+func (u Users) Create(user model.User) (uint64, error) {
 	statement, err := u.db.Prepare("insert into users (name, nick, email, password) values (?, ?, ?, ?)")
 	if err != nil {
 		return 0, err
@@ -35,7 +35,7 @@ func (u Users) Create(user models.User) (uint64, error) {
 	return uint64(ID), nil
 }
 
-func (u Users) FindAllByFilters(nameOrNick string) ([]models.User, error) {
+func (u Users) FindAllByFilters(nameOrNick string) ([]model.User, error) {
 	nameOrNick = fmt.Sprintf("%%%s%%", nameOrNick)
 
 	rows, err := u.db.Query("select id, name, nick, email, created_at from users where name LIKE ? or nick LIKE ?", nameOrNick, nameOrNick)
@@ -44,9 +44,9 @@ func (u Users) FindAllByFilters(nameOrNick string) ([]models.User, error) {
 	}
 	defer rows.Close()
 
-	var users []models.User
+	var users []model.User
 	for rows.Next() {
-		var user models.User
+		var user model.User
 
 		if err = rows.Scan(
 			&user.ID,
@@ -64,14 +64,14 @@ func (u Users) FindAllByFilters(nameOrNick string) ([]models.User, error) {
 	return users, nil
 }
 
-func (u Users) FindByID(userID uint64) (models.User, error) {
+func (u Users) FindByID(userID uint64) (model.User, error) {
 	rows, err := u.db.Query("select id, name, nick, email, created_at from users where id = ?", userID)
 	if err != nil {
-		return models.User{}, err
+		return model.User{}, err
 	}
 	defer rows.Close()
 
-	var user models.User
+	var user model.User
 	if rows.Next() {
 		if err = rows.Scan(
 			&user.ID,
@@ -80,31 +80,31 @@ func (u Users) FindByID(userID uint64) (models.User, error) {
 			&user.Email,
 			&user.CreatedAt,
 		); err != nil {
-			return models.User{}, err
+			return model.User{}, err
 		}
 	}
 
 	return user, nil
 }
 
-func (u Users) FindByEmail(userEmail string) (models.User, error) {
+func (u Users) FindByEmail(userEmail string) (model.User, error) {
 	rows, err := u.db.Query("select id, password from users where email = ?", userEmail)
 	if err != nil {
-		return models.User{}, err
+		return model.User{}, err
 	}
 	defer rows.Close()
 
-	var user models.User
+	var user model.User
 	if rows.Next() {
 		if err = rows.Scan(&user.ID, &user.Password); err != nil {
-			return models.User{}, err
+			return model.User{}, err
 		}
 	}
 
 	return user, nil
 }
 
-func (u Users) UpdateByID(ID uint64, user models.User) error {
+func (u Users) UpdateByID(ID uint64, user model.User) error {
 	statement, err := u.db.Prepare("update users set name = ?, nick = ? where id = ?")
 	if err != nil {
 		return err

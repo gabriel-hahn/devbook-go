@@ -1,13 +1,13 @@
-package controllers
+package controller
 
 import (
 	"encoding/json"
 	"io"
 	"net/http"
 
-	"github.com/gabriel-hahn/devbook/database"
-	"github.com/gabriel-hahn/devbook/models"
-	"github.com/gabriel-hahn/devbook/repositories"
+	"github.com/gabriel-hahn/devbook/internal/database"
+	"github.com/gabriel-hahn/devbook/internal/model"
+	"github.com/gabriel-hahn/devbook/internal/repository"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -17,13 +17,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user models.User
+	var user model.User
 	if err = json.Unmarshal(body, &user); err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	if err = user.Prepare(models.Signup); err != nil {
+	if err = user.Prepare(model.Signup); err != nil {
 		Error(w, http.StatusBadRequest, err)
 		return
 	}
@@ -35,14 +35,14 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	repository := repositories.NewUserRepository(db)
-	user.ID, err = repository.Create(user)
+	userRepository := repository.NewUserRepository(db)
+	user.ID, err = userRepository.Create(user)
 	if err != nil {
 		Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	responseData := models.UserResponse{
+	responseData := model.UserResponse{
 		ID:    user.ID,
 		Name:  user.Name,
 		Nick:  user.Nick,

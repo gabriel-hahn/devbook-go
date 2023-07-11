@@ -1,15 +1,15 @@
-package controllers
+package controller
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/gabriel-hahn/devbook/database"
-	"github.com/gabriel-hahn/devbook/repositories"
+	"github.com/gabriel-hahn/devbook/internal/database"
+	"github.com/gabriel-hahn/devbook/internal/repository"
 	"github.com/gorilla/mux"
 )
 
-func FindUserById(w http.ResponseWriter, r *http.Request) {
+func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	userID, err := strconv.ParseUint(params["id"], 10, 64)
@@ -25,12 +25,11 @@ func FindUserById(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	repository := repositories.NewUserRepository(db)
-	user, err := repository.FindByID(userID)
-	if err != nil {
+	userRepository := repository.NewUserRepository(db)
+	if err = userRepository.DeleteByID(userID); err != nil {
 		Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	JSON(w, http.StatusOK, user)
+	JSON(w, http.StatusNoContent, nil)
 }

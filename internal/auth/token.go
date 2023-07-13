@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 func CreateToken(userID uint64) (string, error) {
 	permissions := jwt.MapClaims{}
 	permissions["authorized"] = true
-	permissions["userId"] = userID
+	permissions["userID"] = userID
 	permissions["exp"] = time.Now().Add(time.Hour * 6).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, permissions)
@@ -33,6 +34,26 @@ func ValidateToken(r *http.Request) error {
 	}
 
 	return errors.New("invalid token")
+}
+
+func ExtractUserID(r *http.Request) (uint64, error) {
+	tokenStr := extractToken(r)
+	token, err := jwt.Parse(tokenStr, verificationKey)
+	if err != nil {
+		return 0, err
+	}
+
+	if permissions, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		userIDStr := fmt.Sprintf("%.0f", permissions["userID"])
+		userID, err := strconv.ParseUint(userIDStr, 10, 64)
+		if err != nil {
+			return 0, err
+		}
+
+		return userID, nil
+	}
+
+	return 0, errors.New("invalid token")
 }
 
 func extractToken(r *http.Request) string {

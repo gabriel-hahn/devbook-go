@@ -20,21 +20,21 @@ var userRoutes = []Route{
 		RequestAuth: true,
 	},
 	{
+		URI:         "/user",
+		Method:      http.MethodPut,
+		Callback:    controller.UpdateUser,
+		RequestAuth: true,
+	},
+	{
+		URI:         "/user",
+		Method:      http.MethodDelete,
+		Callback:    controller.DeleteUser,
+		RequestAuth: true,
+	},
+	{
 		URI:         "/user/{id}",
 		Method:      http.MethodGet,
 		Callback:    controller.FindUserById,
-		RequestAuth: true,
-	},
-	{
-		URI:         "/user/{id}",
-		Method:      http.MethodPut,
-		Callback:    controller.UpdateUserById,
-		RequestAuth: true,
-	},
-	{
-		URI:         "/user/{id}",
-		Method:      http.MethodDelete,
-		Callback:    controller.DeleteUserById,
 		RequestAuth: true,
 	},
 }

@@ -4,19 +4,16 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"strconv"
 
+	"github.com/gabriel-hahn/devbook/internal/auth"
 	"github.com/gabriel-hahn/devbook/internal/database"
 	"github.com/gabriel-hahn/devbook/internal/model"
 	"github.com/gabriel-hahn/devbook/internal/repository"
 	"github.com/gabriel-hahn/devbook/internal/response"
-	"github.com/gorilla/mux"
 )
 
-func UpdateUserById(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-
-	userID, err := strconv.ParseUint(params["id"], 10, 64)
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	userID, err := auth.ExtractUserID(r)
 	if err != nil {
 		response.Error(w, http.StatusBadRequest, err)
 		return

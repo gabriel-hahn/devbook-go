@@ -145,3 +145,17 @@ func (u Users) Follow(followerID, userID uint64) error {
 
 	return nil
 }
+
+func (u Users) Unfollow(unfollowID, userID uint64) error {
+	statement, err := u.db.Prepare("delete from followers where user_id = ? and follower_id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(unfollowID, userID); err != nil {
+		return err
+	}
+
+	return nil
+}

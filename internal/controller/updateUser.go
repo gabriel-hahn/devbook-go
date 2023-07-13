@@ -15,7 +15,7 @@ import (
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := auth.ExtractUserID(r)
 	if err != nil {
-		response.Error(w, http.StatusBadRequest, err)
+		response.Error(w, http.StatusUnauthorized, err)
 		return
 	}
 

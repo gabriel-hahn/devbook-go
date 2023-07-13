@@ -7,19 +7,20 @@ import (
 
 	"github.com/gabriel-hahn/devbook/internal/database"
 	"github.com/gabriel-hahn/devbook/internal/repository"
+	"github.com/gabriel-hahn/devbook/internal/response"
 )
 
 func FindAllUsers(w http.ResponseWriter, r *http.Request) {
 	nameOrNick := strings.ToLower(r.URL.Query().Get("user"))
 
 	if nameOrNick == "" {
-		Error(w, http.StatusBadRequest, errors.New("the query param 'user' is required"))
+		response.Error(w, http.StatusBadRequest, errors.New("the query param 'user' is required"))
 		return
 	}
 
 	db, err := database.Connect()
 	if err != nil {
-		Error(w, http.StatusInternalServerError, err)
+		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 	defer db.Close()
@@ -27,9 +28,9 @@ func FindAllUsers(w http.ResponseWriter, r *http.Request) {
 	userRepository := repository.NewUserRepository(db)
 	users, err := userRepository.FindAllByFilters(nameOrNick)
 	if err != nil {
-		Error(w, http.StatusInternalServerError, err)
+		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	JSON(w, http.StatusOK, users)
+	response.JSON(w, http.StatusOK, users)
 }

@@ -1,9 +1,11 @@
 package middleware
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gabriel-hahn/devbook/internal/auth"
+	"github.com/gabriel-hahn/devbook/internal/response"
 )
 
 func Logger(next http.HandlerFunc) http.HandlerFunc {
@@ -15,7 +17,11 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 
 func Auth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Print("Validating token...")
+		if err := auth.ValidateToken(r); err != nil {
+			response.Error(w, http.StatusUnauthorized, err)
+			return
+		}
+
 		next(w, r)
 	}
 }

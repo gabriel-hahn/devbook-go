@@ -49,4 +49,16 @@ var userRoutes = []Route{
 		Callback:    controller.UnfollowUser,
 		RequestAuth: true,
 	},
+	{
+		URI:         "/user/{userId}/followers",
+		Method:      http.MethodGet,
+		Callback:    controller.FindAllFollowers,
+		RequestAuth: true,
+	},
+	{
+		URI:         "/user/{userId}/following",
+		Method:      http.MethodGet,
+		Callback:    controller.FindAllFollowing,
+		RequestAuth: true,
+	},
 }

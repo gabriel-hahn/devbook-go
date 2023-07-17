@@ -61,4 +61,10 @@ var userRoutes = []Route{
 		Callback:    controller.FindAllFollowing,
 		RequestAuth: true,
 	},
+	{
+		URI:         "/user/update-password",
+		Method:      http.MethodPost,
+		Callback:    controller.UpdatePassword,
+		RequestAuth: true,
+	},
 }

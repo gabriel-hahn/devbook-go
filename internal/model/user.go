@@ -26,6 +26,11 @@ type UserResponse struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 }
 
+type UserPasswordUpdate struct {
+	OldPassword string `json:"oldPassword,omitempty"`
+	NewPassword string `json:"newPassword,omitempty"`
+}
+
 type ValidationType string
 
 const (

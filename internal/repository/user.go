@@ -219,3 +219,34 @@ func (u Users) FindAllUserFollows(userID uint64) ([]model.User, error) {
 
 	return users, nil
 }
+
+func (u Users) FindPasswordByID(userID uint64) (string, error) {
+	row, err := u.db.Query("select password from users where id = ?", userID)
+	if err != nil {
+		return "", err
+	}
+	defer row.Close()
+
+	var user model.User
+	if row.Next() {
+		if err = row.Scan(&user.Password); err != nil {
+			return "", err
+		}
+	}
+
+	return user.Password, nil
+}
+
+func (u Users) UpdatePassword(userID uint64, password string) error {
+	statement, err := u.db.Prepare("update users set password = ? where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(password, userID); err != nil {
+		return err
+	}
+
+	return nil
+}

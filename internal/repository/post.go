@@ -34,6 +34,35 @@ func (p Posts) Create(post model.Post) (uint64, error) {
 	return uint64(ID), nil
 }
 
+func (p Posts) FindAllByUserID(userID uint64) ([]model.Post, error) {
+	rows, err := p.db.Query("select distinct p.*, u.nick from posts p join users u on p.author_id = u.id left join followers f on u.id = f.user_id where u.id = ? or f.follower_id = ? order by 1 desc", userID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []model.Post
+	for rows.Next() {
+		var post model.Post
+
+		if err = rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.AuthorID,
+			&post.Likes,
+			&post.CreatedAt,
+			&post.AuthorNick,
+		); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
 func (p Posts) FindByID(postID uint64) (model.Post, error) {
 	row, err := p.db.Query("select p.*, u.nick from posts p inner join users u on u.id = p.author_id where p.id = ?", postID)
 	if err != nil {

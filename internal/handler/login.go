@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"encoding/json"
@@ -14,21 +14,15 @@ import (
 	"github.com/gabriel-hahn/devbook/internal/response"
 )
 
-func UpdatePassword(w http.ResponseWriter, r *http.Request) {
-	userID, err := auth.ExtractUserID(r)
-	if err != nil {
-		response.Error(w, http.StatusUnauthorized, err)
-		return
-	}
-
+func Login(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		response.Error(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	var passwordData model.UserPasswordUpdate
-	if err := json.Unmarshal(body, &passwordData); err != nil {
+	var user model.User
+	if err = json.Unmarshal(body, &user); err != nil {
 		response.Error(w, http.StatusBadRequest, err)
 		return
 	}
@@ -41,27 +35,22 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	userRepository := repository.NewUserRepository(db)
-	dbPassword, err := userRepository.FindPasswordByID(userID)
+	userFromDB, err := userRepository.FindByEmail(user.Email)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, errors.New("invalid credentials"))
+		return
+	}
+
+	if err = crypto.CheckPassword(userFromDB.Password, user.Password); err != nil {
+		response.Error(w, http.StatusUnauthorized, errors.New("invalid credentials"))
+		return
+	}
+
+	token, err := auth.CreateToken(userFromDB.ID)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	if err = crypto.CheckPassword(dbPassword, passwordData.OldPassword); err != nil {
-		response.Error(w, http.StatusBadRequest, errors.New("current password is invalid"))
-		return
-	}
-
-	hashedPassword, err := crypto.GenerateHash(passwordData.NewPassword)
-	if err != nil {
-		response.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	if err = userRepository.UpdatePassword(userID, string(hashedPassword)); err != nil {
-		response.Error(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	response.JSON(w, http.StatusNoContent, nil)
+	w.Write([]byte(token))
 }

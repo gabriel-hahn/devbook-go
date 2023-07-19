@@ -3,68 +3,68 @@ package route
 import (
 	"net/http"
 
-	"github.com/gabriel-hahn/devbook/internal/controller"
+	"github.com/gabriel-hahn/devbook/internal/handler"
 )
 
 var userRoutes = []Route{
 	{
 		URI:         "/users",
 		Method:      http.MethodGet,
-		Callback:    controller.FindAllUsers,
+		Callback:    handler.FindAllUsers,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user",
 		Method:      http.MethodPost,
-		Callback:    controller.CreateUser,
+		Callback:    handler.CreateUser,
 		RequestAuth: false,
 	},
 	{
 		URI:         "/user",
 		Method:      http.MethodPut,
-		Callback:    controller.UpdateUser,
+		Callback:    handler.UpdateUser,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user",
 		Method:      http.MethodDelete,
-		Callback:    controller.DeleteUser,
+		Callback:    handler.DeleteUser,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user/{id}",
 		Method:      http.MethodGet,
-		Callback:    controller.FindUserById,
+		Callback:    handler.FindUserById,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user/{userId}/follow",
 		Method:      http.MethodPost,
-		Callback:    controller.FollowUser,
+		Callback:    handler.FollowUser,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user/{userId}/unfollow",
 		Method:      http.MethodPost,
-		Callback:    controller.UnfollowUser,
+		Callback:    handler.UnfollowUser,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user/{userId}/followers",
 		Method:      http.MethodGet,
-		Callback:    controller.FindAllFollowers,
+		Callback:    handler.FindAllFollowers,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user/{userId}/following",
 		Method:      http.MethodGet,
-		Callback:    controller.FindAllFollowing,
+		Callback:    handler.FindAllFollowing,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/user/update-password",
 		Method:      http.MethodPost,
-		Callback:    controller.UpdatePassword,
+		Callback:    handler.UpdatePassword,
 		RequestAuth: true,
 	},
 }

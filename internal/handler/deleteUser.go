@@ -1,20 +1,18 @@
-package controller
+package handler
 
 import (
-	"errors"
 	"net/http"
-	"strings"
 
+	"github.com/gabriel-hahn/devbook/internal/auth"
 	"github.com/gabriel-hahn/devbook/internal/database"
 	"github.com/gabriel-hahn/devbook/internal/repository"
 	"github.com/gabriel-hahn/devbook/internal/response"
 )
 
-func FindAllUsers(w http.ResponseWriter, r *http.Request) {
-	nameOrNick := strings.ToLower(r.URL.Query().Get("user"))
-
-	if nameOrNick == "" {
-		response.Error(w, http.StatusBadRequest, errors.New("the query param 'user' is required"))
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	userID, err := auth.ExtractUserID(r)
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, err)
 		return
 	}
 
@@ -26,11 +24,10 @@ func FindAllUsers(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	userRepository := repository.NewUserRepository(db)
-	users, err := userRepository.FindAllByFilters(nameOrNick)
-	if err != nil {
+	if err = userRepository.DeleteByID(userID); err != nil {
 		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	response.JSON(w, http.StatusOK, users)
+	response.JSON(w, http.StatusNoContent, nil)
 }

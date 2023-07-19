@@ -3,38 +3,38 @@ package route
 import (
 	"net/http"
 
-	"github.com/gabriel-hahn/devbook/internal/controller"
+	"github.com/gabriel-hahn/devbook/internal/handler"
 )
 
 var postRoutes = []Route{
 	{
 		URI:         "/posts",
 		Method:      http.MethodGet,
-		Callback:    controller.FindAllPosts,
+		Callback:    handler.FindAllPosts,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/post/{postId}",
 		Method:      http.MethodGet,
-		Callback:    controller.FindPostById,
+		Callback:    handler.FindPostById,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/post/{postId}",
 		Method:      http.MethodPut,
-		Callback:    controller.UpdatePostById,
+		Callback:    handler.UpdatePostById,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/post/{postId}",
 		Method:      http.MethodDelete,
-		Callback:    controller.DeletePostById,
+		Callback:    handler.DeletePostById,
 		RequestAuth: true,
 	},
 	{
 		URI:         "/post",
 		Method:      http.MethodPost,
-		Callback:    controller.CreatePost,
+		Callback:    handler.CreatePost,
 		RequestAuth: true,
 	},
 }

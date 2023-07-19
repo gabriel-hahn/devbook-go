@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"encoding/json"
@@ -14,15 +14,21 @@ import (
 	"github.com/gabriel-hahn/devbook/internal/response"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	userID, err := auth.ExtractUserID(r)
+	if err != nil {
+		response.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		response.Error(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	var user model.User
-	if err = json.Unmarshal(body, &user); err != nil {
+	var passwordData model.UserPasswordUpdate
+	if err := json.Unmarshal(body, &passwordData); err != nil {
 		response.Error(w, http.StatusBadRequest, err)
 		return
 	}
@@ -35,22 +41,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	userRepository := repository.NewUserRepository(db)
-	userFromDB, err := userRepository.FindByEmail(user.Email)
-	if err != nil {
-		response.Error(w, http.StatusInternalServerError, errors.New("invalid credentials"))
-		return
-	}
-
-	if err = crypto.CheckPassword(userFromDB.Password, user.Password); err != nil {
-		response.Error(w, http.StatusUnauthorized, errors.New("invalid credentials"))
-		return
-	}
-
-	token, err := auth.CreateToken(userFromDB.ID)
+	dbPassword, err := userRepository.FindPasswordByID(userID)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	w.Write([]byte(token))
+	if err = crypto.CheckPassword(dbPassword, passwordData.OldPassword); err != nil {
+		response.Error(w, http.StatusBadRequest, errors.New("current password is invalid"))
+		return
+	}
+
+	hashedPassword, err := crypto.GenerateHash(passwordData.NewPassword)
+	if err != nil {
+		response.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = userRepository.UpdatePassword(userID, string(hashedPassword)); err != nil {
+		response.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	response.JSON(w, http.StatusNoContent, nil)
 }

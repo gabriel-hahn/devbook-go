@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"net/http"
@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func FindAllFollowers(w http.ResponseWriter, r *http.Request) {
+func FindAllFollowing(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	userID, err := strconv.ParseUint(params["userId"], 10, 64)
@@ -27,7 +27,7 @@ func FindAllFollowers(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	userRepository := repository.NewUserRepository(db)
-	followers, err := userRepository.FindAllFollowersByUserID(userID)
+	followers, err := userRepository.FindAllUserFollows(userID)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err)
 		return

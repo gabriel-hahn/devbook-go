@@ -3,12 +3,12 @@ package route
 import (
 	"net/http"
 
-	"github.com/gabriel-hahn/devbook/internal/controller"
+	"github.com/gabriel-hahn/devbook/internal/handler"
 )
 
 var loginRoutes = Route{
 	URI:         "/login",
 	Method:      http.MethodPost,
-	Callback:    controller.Login,
+	Callback:    handler.Login,
 	RequestAuth: false,
 }

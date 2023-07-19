@@ -1,21 +1,20 @@
-package controller
+package handler
 
 import (
+	"errors"
 	"net/http"
-	"strconv"
+	"strings"
 
 	"github.com/gabriel-hahn/devbook/internal/database"
 	"github.com/gabriel-hahn/devbook/internal/repository"
 	"github.com/gabriel-hahn/devbook/internal/response"
-	"github.com/gorilla/mux"
 )
 
-func FindAllFollowing(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+func FindAllUsers(w http.ResponseWriter, r *http.Request) {
+	nameOrNick := strings.ToLower(r.URL.Query().Get("user"))
 
-	userID, err := strconv.ParseUint(params["userId"], 10, 64)
-	if err != nil {
-		response.Error(w, http.StatusBadRequest, err)
+	if nameOrNick == "" {
+		response.Error(w, http.StatusBadRequest, errors.New("the query param 'user' is required"))
 		return
 	}
 
@@ -27,11 +26,11 @@ func FindAllFollowing(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	userRepository := repository.NewUserRepository(db)
-	followers, err := userRepository.FindAllUserFollows(userID)
+	users, err := userRepository.FindAllByFilters(nameOrNick)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	response.JSON(w, http.StatusOK, followers)
+	response.JSON(w, http.StatusOK, users)
 }

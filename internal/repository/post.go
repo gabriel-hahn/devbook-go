@@ -33,3 +33,28 @@ func (p Posts) Create(post model.Post) (uint64, error) {
 
 	return uint64(ID), nil
 }
+
+func (p Posts) FindByID(postID uint64) (model.Post, error) {
+	row, err := p.db.Query("select p.*, u.nick from posts p inner join users u on u.id = p.author_id where p.id = ?", postID)
+	if err != nil {
+		return model.Post{}, err
+	}
+	defer row.Close()
+
+	var post model.Post
+	if row.Next() {
+		if err = row.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.AuthorID,
+			&post.Likes,
+			&post.CreatedAt,
+			&post.AuthorNick,
+		); err != nil {
+			return model.Post{}, err
+		}
+	}
+
+	return post, nil
+}

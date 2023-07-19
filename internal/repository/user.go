@@ -65,15 +65,15 @@ func (u Users) FindAllByFilters(nameOrNick string) ([]model.User, error) {
 }
 
 func (u Users) FindByID(userID uint64) (model.User, error) {
-	rows, err := u.db.Query("select id, name, nick, email, created_at from users where id = ?", userID)
+	row, err := u.db.Query("select id, name, nick, email, created_at from users where id = ?", userID)
 	if err != nil {
 		return model.User{}, err
 	}
-	defer rows.Close()
+	defer row.Close()
 
 	var user model.User
-	if rows.Next() {
-		if err = rows.Scan(
+	if row.Next() {
+		if err = row.Scan(
 			&user.ID,
 			&user.Name,
 			&user.Nick,

@@ -87,3 +87,17 @@ func (p Posts) FindByID(postID uint64) (model.Post, error) {
 
 	return post, nil
 }
+
+func (p Posts) UpdateByID(ID uint64, post model.Post) error {
+	statement, err := p.db.Prepare("update posts set title = ?, content = ? where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(post.Title, post.Content, ID); err != nil {
+		return err
+	}
+
+	return nil
+}

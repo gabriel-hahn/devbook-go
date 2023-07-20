@@ -144,3 +144,31 @@ func (p Posts) FindAllUserPosts(userID uint64) ([]model.Post, error) {
 
 	return posts, nil
 }
+
+func (p Posts) Like(postID uint64) error {
+	statement, err := p.db.Prepare("update posts set likes = likes + 1 where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(postID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p Posts) Dislike(postID uint64) error {
+	statement, err := p.db.Prepare("update posts set likes = case when likes > 0 then likes - 1 else 0 end where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(postID); err != nil {
+		return err
+	}
+
+	return nil
+}

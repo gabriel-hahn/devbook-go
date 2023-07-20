@@ -43,4 +43,16 @@ var postRoutes = []Route{
 		Callback:    handler.CreatePost,
 		RequestAuth: true,
 	},
+	{
+		URI:         "/post/{postId}/like",
+		Method:      http.MethodPost,
+		Callback:    handler.LikePostById,
+		RequestAuth: true,
+	},
+	{
+		URI:         "/post/{postId}/dislike",
+		Method:      http.MethodPost,
+		Callback:    handler.DislikePostById,
+		RequestAuth: true,
+	},
 }

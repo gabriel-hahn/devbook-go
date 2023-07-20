@@ -101,3 +101,17 @@ func (p Posts) UpdateByID(ID uint64, post model.Post) error {
 
 	return nil
 }
+
+func (p Posts) DeleteByID(ID uint64) error {
+	statement, err := p.db.Prepare("delete from posts where id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(ID); err != nil {
+		return err
+	}
+
+	return nil
+}

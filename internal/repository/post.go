@@ -115,3 +115,32 @@ func (p Posts) DeleteByID(ID uint64) error {
 
 	return nil
 }
+
+func (p Posts) FindAllUserPosts(userID uint64) ([]model.Post, error) {
+	rows, err := p.db.Query("select p.*, u.nick from posts p join users u on p.author_id = u.id where p.author_id = ? order by 1 desc", userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []model.Post
+	for rows.Next() {
+		var post model.Post
+
+		if err = rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.AuthorID,
+			&post.Likes,
+			&post.CreatedAt,
+			&post.AuthorNick,
+		); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}

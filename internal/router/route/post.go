@@ -14,6 +14,12 @@ var postRoutes = []Route{
 		RequestAuth: true,
 	},
 	{
+		URI:         "/users/{userId}/posts",
+		Method:      http.MethodGet,
+		Callback:    handler.FindAllPostsByUser,
+		RequestAuth: true,
+	},
+	{
 		URI:         "/post/{postId}",
 		Method:      http.MethodGet,
 		Callback:    handler.FindPostById,
